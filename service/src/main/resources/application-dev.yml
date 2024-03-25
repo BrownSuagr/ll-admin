@@ -1,0 +1,69 @@
+server:
+  port: 9000
+  servlet:
+    context-path: /service
+
+#配置数据源
+spring:
+  profiles: dev
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 1000MB
+  datasource:
+    url: jdbc:mysql://124.70.78.122:3306/bs?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: '!@#123qwe'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # HikariPool配置
+    hikari:
+      connection-timeout: 60000
+      validation-timeout: 3000
+      idle-timeout: 60000
+      login-timeout: 5
+      max-lifetime: 60000
+      maximum-pool-size: 10
+      minimum-idle: 10
+      read-only: false
+
+  redis:
+    host: 124.70.78.122 # Redis服务器地址
+    port: 6379 # Redis服务器连接端口
+    password: # Redis服务器连接密码（默认为空）
+    timeout: 1000
+
+
+
+# 配置swagger
+knife4j:
+  enable: true
+  # 生产环境屏蔽
+  # production: true
+  # 开启Swagger的Basic认证功能,默认是false
+  basic:
+    enable: true
+    username: root
+    password: 123456
+  documents:
+    - group: 2.X版本
+      name: 另外文档分组请看这里
+      locations: classpath:markdown/*
+    - group: 2.X版本
+      name: 接入方法
+      locations: classpath:markdown/api.md
+
+#是否开启 swagger-ui
+swagger:
+  enabled: true
+
+# 配置mybatis-plus配置
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/*.xml
+  type-aliases-package: com.bs.business.**.mapper
+#  type-aliases-package: com.bs.business.*.mapper
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    enable-sql-runner: true
+
+
