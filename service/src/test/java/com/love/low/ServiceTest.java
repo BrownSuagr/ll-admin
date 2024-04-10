@@ -62,7 +62,7 @@ public class ServiceTest {
         LOG.info("Interface：生成网络核查组报告 MethodName：create Params companyNameList:{}", companyNameList);
         List<ExcelExportDTO> dataList = Lists.newArrayList();
 
-        String path = "/Users/BrownSugar/IDEAWorkPlace/loveLow/documents/";
+        String path = "./documents/";
 
         // 循环获取数据
         LambdaQueryWrapper<NetInspectRep> qw = new LambdaQueryWrapper<>();

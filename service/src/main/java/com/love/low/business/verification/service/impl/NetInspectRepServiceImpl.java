@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
 import com.love.low.asynchronous.AsyncService;
 import com.love.low.business.verification.service.NetInspectRepService;
+import com.love.low.component.EnvironmentChecker;
 import com.love.low.enmus.ExcelTemplate;
 import com.love.low.entity.Company;
 import com.love.low.entity.NetInspectRep;
@@ -55,6 +56,7 @@ public class NetInspectRepServiceImpl implements NetInspectRepService {
     final AsyncService asyncService;
     final ExcelService excelService;
     final CompanyMapper companyMapper;
+    final EnvironmentChecker environmentChecker;
     final NetInspectRepMapper netInspectRepMapper;
 
     /**
@@ -132,12 +134,10 @@ public class NetInspectRepServiceImpl implements NetInspectRepService {
     @Override
     public Boolean saveScreenCaptureFile(String url, String companyPath, String siteName) {
         final TimeInterval timer = new TimeInterval();
-
-        if(Boolean.FALSE){
-            System.setProperty("webdriver.chrome.driver", "service/src/main/driver/mac_chromedriver");
-        }else {
-//            System.setProperty("webdriver.chrome.driver", "service/src/main/driver/mac_chromedriver");
+        if(environmentChecker.isDevEnvironment()){
             System.setProperty("webdriver.chrome.driver", "src/main/driver/mac_chromedriver");
+        }else {
+            System.setProperty("webdriver.chrome.driver", "src/main/driver/linux64_chromedriver");
         }
 
         ChromeOptions options = new ChromeOptions();
