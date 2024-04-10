@@ -25,7 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-@Service
+//@Service
 public class ScreenshotService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ScreenshotService.class);

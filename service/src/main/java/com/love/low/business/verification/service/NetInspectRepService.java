@@ -31,4 +31,7 @@ public interface NetInspectRepService {
      * @date: 2024-04-03 10:50:48
      **/
     List<CommonVO> companyNameList(String companyName);
+
+
+    Boolean saveScreenCaptureFile(String url, String companyPath, String siteName);
 }

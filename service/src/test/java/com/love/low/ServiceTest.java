@@ -1,5 +1,19 @@
 package com.love.low;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.google.common.collect.Lists;
+import com.love.low.business.verification.service.NetInspectRepService;
+import com.love.low.enmus.ExcelTemplate;
+import com.love.low.entity.NetInspectRep;
+import com.love.low.mapper.NetInspectRepMapper;
+import com.love.low.model.dto.ExcelExportDTO;
+import com.love.low.model.dto.NetInspectRepDTO;
+import com.love.low.service.ExcelService;
 import nonapi.io.github.classgraph.utils.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Dimension;
@@ -14,9 +28,14 @@ import org.openqa.selenium.chrome.ChromeOptions;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
+import static com.love.low.enmus.DataStatusEnum.VALID;
 
 
 @SpringBootTest
@@ -24,12 +43,68 @@ public class ServiceTest {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceTest.class);
 
 
+//    @Resource
+//    private ScreenshotService screenshotService;
     @Resource
-    private  ScreenshotService screenshotService;
+    private NetInspectRepMapper netInspectRepMapper;
+    @Resource
+    private ExcelService excelService;
+    @Resource
+    private NetInspectRepService netInspectRepService;
+
+    @Test
+    public void create() {
+        List<String> companyNameList = List.of("华为", "字节跳动");
+
+        if(CollUtil.isEmpty(companyNameList)){
+            return;
+        }
+        LOG.info("Interface：生成网络核查组报告 MethodName：create Params companyNameList:{}", companyNameList);
+        List<ExcelExportDTO> dataList = Lists.newArrayList();
+
+        String path = "/Users/BrownSugar/IDEAWorkPlace/loveLow/documents/";
+
+        // 循环获取数据
+        LambdaQueryWrapper<NetInspectRep> qw = new LambdaQueryWrapper<>();
+        qw.eq(NetInspectRep::getValidFlag, VALID.getCode()).orderByAsc(NetInspectRep::getId);
+        List<NetInspectRep> netInspectRepList = netInspectRepMapper.selectList(qw);
+
+        companyNameList.forEach(companyName ->{
+            LinkedList<NetInspectRepDTO> list = Lists.newLinkedList();
+
+            netInspectRepList.forEach(net ->{
+                NetInspectRepDTO dto = new NetInspectRepDTO();
+                BeanUtil.copyProperties(net, dto);
+                dto.setSubject(companyName);
+                dto.setCheckDate(DateUtil.format(DateUtil.date(), DatePattern.NORM_DATE_PATTERN));
+
+                String companyPath = path + companyName + "/";
+                Boolean flag = netInspectRepService.saveScreenCaptureFile(dto.getSiteUrl(), companyPath , dto.getSiteName());
+                dto.setResultNum(flag ? "1" : "0");
+                dto.setResultNum("0");
+                list.add(dto);
+            });
+
+            ExcelExportDTO<NetInspectRepDTO> dto = new ExcelExportDTO();
+            dto.setIndex(0);
+            dto.setName(companyName);
+            dto.setList(list);
+
+            dataList.add(dto);
+        });
+
+        LOG.warn("查询结果:{}", JSONUtil.toJsonStr(dataList));
+        //excelService.exportExcel(ExcelTemplate.ExtendedWarranty, dataList, response);
+        excelService.exportExcel(ExcelTemplate.ExtendedWarranty, path, dataList);
+    }
+
+
+
+
+
     @Test
     public void WebScreenshot(){
 
-        ScreenshotService screenshotService1 = new ScreenshotService();
 
     }
 

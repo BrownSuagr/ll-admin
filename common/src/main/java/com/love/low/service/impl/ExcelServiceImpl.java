@@ -107,12 +107,12 @@ public class ExcelServiceImpl implements ExcelService {
 
 
     @Override
-    public void exportExcel(ExcelTemplate excelTemplate, List<ExcelExportDTO> list, HttpServletResponse response) {
+    public void exportExcel(ExcelTemplate excelTemplate, String path, List<ExcelExportDTO> list) {
         if (CollUtil.isEmpty(list)) {
             return;
         }
         //excel模板
-        try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(excelTemplate.getExportPath()); ByteArrayOutputStream bos = new ByteArrayOutputStream(); OutputStream out = response.getOutputStream()) {
+        try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(excelTemplate.getExportPath()); ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 
             //原模板只有一个sheet，通过poi复制出需要的sheet个数的模板
             XSSFWorkbook workbook = new XSSFWorkbook(in);
@@ -130,16 +130,17 @@ public class ExcelServiceImpl implements ExcelService {
 
             //输出文件路径
 
-            String encodeName = URLEncoder.encode(excelTemplate.getName(), StandardCharsets.UTF_8);
-            response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            response.setHeader(HttpHeaders.CONTENT_DISPOSITION,"attachment;filename=" + encodeName);
+//            String encodeName = URLEncoder.encode(excelTemplate.getName(), StandardCharsets.UTF_8);
+//            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+//            response.setHeader(HttpHeaders.CONTENT_DISPOSITION,"attachment;filename=" + encodeName);
 
             //输出文件路径
 //            String filePath = "D:\\home\\" + System.currentTimeMillis() + ".xlsx";
-            String filePath = "D:\\home\\" + System.currentTimeMillis() + ExcelTypeEnum.XLSX.getValue();
+            //String filePath = "D:\\home\\" + System.currentTimeMillis() + ExcelTypeEnum.XLSX.getValue();
+            String filePath = path + System.currentTimeMillis() + ExcelTypeEnum.XLSX.getValue();
 
             ExcelWriter writer = EasyExcel
-                    .write(out)
+                    .write(filePath)
                     .excelType(ExcelTypeEnum.XLSX)
                     .withTemplate(is)
                     .build();

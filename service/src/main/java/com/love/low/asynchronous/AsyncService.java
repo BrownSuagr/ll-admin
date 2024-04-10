@@ -18,6 +18,5 @@ public interface AsyncService {
      * @date: 2023-10-19 03:01:09
      **/
     @Async("taskExecutor")
-    void executeNewsInsert(Map<Integer, List<NewsListVO>> map, Integer currentUserId);
-
+    void executeNewsInsert(Integer currentUserId);
 }

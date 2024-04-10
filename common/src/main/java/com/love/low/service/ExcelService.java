@@ -25,5 +25,6 @@ public interface ExcelService {
      **/
     void exportExcel(ExcelTemplate excelTemplate, Map<String, Object> sheetMap, HttpServletResponse response);
 
-    void exportExcel(ExcelTemplate excelTemplate, List<ExcelExportDTO> list, HttpServletResponse response);
+
+    void exportExcel(ExcelTemplate excelTemplate, String path, List<ExcelExportDTO> list);
 }
